@@ -10,7 +10,7 @@ def hello_world():  # put application's code here
 # Nueva ruta para mostrar un mensaje personalizado
 @app.route('/usuario/<nombre>')
 def usuario(nombre):
-    return f'Bienvenido, {nombre}!'
+    return f'Bienvenido Nuevamnete , {nombre}!'
 # NUEVa ruta
 # Ruta para mostrar el formulario
 @app.route('/usuario/', methods=['GET', 'POST'])
