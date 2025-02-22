@@ -1,30 +1,30 @@
-from flask import Flask, request
+from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
-
+# Página de inicio
 @app.route('/')
-def hello_world():  # put application's code here
-    return 'Hello World clase encuentro!'
+def index():
+    return render_template('index.html')
 
-# Nueva ruta para mostrar un mensaje personalizado
+# Página "Acerca de"
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+# Ruta dinámica con nombre de usuario
 @app.route('/usuario/<nombre>')
 def usuario(nombre):
-    return f'Bienvenido Nuevamnete , {nombre}!'
-# NUEVa ruta
-# Ruta para mostrar el formulario
+    return render_template('usuario.html', nombre=nombre)
+
+# Ruta con formulario para ingresar nombre
 @app.route('/usuario/', methods=['GET', 'POST'])
 def usuario_form():
     if request.method == 'POST':
         nombre = request.form['nombre']
-        return f'Bienvenido, {nombre}!'
-    return '''
-        <form method="post">
-            <label for="nombre">Ingresa tu nombre:</label>
-            <input type="text" id="nombre" name="nombre" >
-            <button type="submit">Enviar</button>
-        </form>
-    '''
+        return render_template('usuario.html', nombre=nombre)
+    return render_template('formulario.html')
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
+
