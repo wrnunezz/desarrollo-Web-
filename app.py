@@ -1,6 +1,7 @@
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from models.models import Usuario
+from models.modelsp import Producto
 from flask import Flask, render_template, request, redirect, url_for, flash, session,  jsonify
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
@@ -118,6 +119,46 @@ def login():
             flash('Email o contraseña incorrectos')
 
     return render_template('login.html')
+
+@app.route('/crear', methods=['GET', 'POST'])
+def crear_producto():
+    if request.method == 'POST':
+        nombre = request.form['nombre']
+        precio = request.form['precio']
+        stock = request.form['stock']
+        if nombre and precio and stock:
+            Producto.insertar(nombre, float(precio), int(stock))
+            flash('Producto creado exitosamente.')
+            return redirect(url_for('listar_productos'))
+        else:
+            flash('Todos los campos son obligatorios.')
+    return render_template('crear_producto.html')
+
+@app.route('/productos')
+def listar_productos():
+    productos = Producto.obtener_todos()
+    return render_template('productos.html', productos=productos)
+@app.route('/editar/<int:id_producto>', methods=['GET', 'POST'])
+def editar_producto(id_producto):
+    producto = Producto.obtener_por_id(id_producto)
+    if request.method == 'POST':
+        nombre = request.form['nombre']
+        precio = request.form['precio']
+        stock = request.form['stock']
+        Producto.actualizar(id_producto, nombre, float(precio), int(stock))
+        flash('Producto actualizado correctamente.')
+        return redirect(url_for('listar_productos'))
+    return render_template('editar_producto.html', producto=producto)
+
+@app.route('/eliminar/<int:id_producto>', methods=['GET', 'POST'])
+def eliminar_producto(id_producto):
+    if request.method == 'POST':
+        Producto.eliminar(id_producto)
+        flash('Producto eliminado correctamente.')
+        return redirect(url_for('listar_productos'))
+    producto = Producto.obtener_por_id(id_producto)
+    return render_template('eliminar_producto.html', producto=producto)
+
 
 @login_manager.user_loader
 def load_user(user_id):
